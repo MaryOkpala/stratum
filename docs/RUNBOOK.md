@@ -95,32 +95,4 @@ ssh -i ~/.ssh/stratum-key.pem \
 cd terraform/environments/dev
 terraform destroy
 ```
-
-## Architecture
-Internet
-│
-▼
-Internet Gateway
-│
-▼
-Public Subnet (10.0.1.0/24)
-├── Bastion host    — SSH jump server, your IP only
-└── Web tier        — Nginx reverse proxy, ports 80/443
-│ proxy_pass :8080
-▼
-Private Subnet (10.0.2.0/24)
-└── App tier        — Tomcat, no public IP
-│ outbound only
-▼
-NAT Gateway → Internet
-## Cost estimate
-
-| Resource | Type | Cost/day (running) |
-|----------|------|-------------------|
-| Bastion | t3.micro | ~$0.01 |
-| Web tier | t3.small | ~$0.02 |
-| App tier | t3.small | ~$0.02 |
-| NAT Gateway | — | ~$0.045 + data |
-| Total | — | ~$0.10/day |
-
 Stop instances when not in use. NAT Gateway incurs hourly charges even when idle — run `terraform destroy` when done showcasing.
