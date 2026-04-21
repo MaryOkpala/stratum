@@ -31,6 +31,8 @@ Zero manual console clicks and everything is versioned, repeatable, and idempote
 
 ## Infrastructure layout
 
+![Infrastructure Layout](docs/infrastructure-layout.png)
+
 ```
 Internet
     │
