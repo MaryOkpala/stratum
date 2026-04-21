@@ -6,9 +6,9 @@
 
 Stratum provisions a complete, production-style AWS environment entirely from code:
 
-- **Terraform** creates all AWS resources — VPC, subnets, internet gateway, NAT gateway, route tables, security groups, and EC2 instances across three tiers
-- **Ansible** configures every server — OS hardening, Nginx reverse proxy on the web tier, Java and Tomcat on the app tier
-- **Remote state** stored in S3 with DynamoDB locking — safe for team use
+- **Terraform** creates all AWS resources: VPC, subnets, internet gateway, NAT gateway, route tables, security groups, and EC2 instances across three tiers
+- **Ansible** configures every server: OS hardening, Nginx reverse proxy on the web tier, Java and Tomcat on the app tier
+- **Remote state** stored in S3 with DynamoDB locking: safe for team use
 
 Zero manual console clicks and everything is versioned, repeatable, and idempotent.
 
