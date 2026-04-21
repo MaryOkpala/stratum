@@ -1,0 +1,4 @@
+---
+tomcat_version: "10.1.18"
+java_xms: 256m
+java_xmx: 512m

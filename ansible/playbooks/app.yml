@@ -1,0 +1,8 @@
+---
+- name: Configure app tier only
+  hosts: app
+  gather_facts: no
+  roles:
+    - common
+    - security
+    - java-app

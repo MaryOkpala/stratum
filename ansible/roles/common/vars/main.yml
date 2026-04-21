@@ -1,0 +1,12 @@
+---
+common_packages:
+  - curl
+  - wget
+  - git
+  - unzip
+  - htop
+  - net-tools
+  - ufw
+  - fail2ban
+  - python3-pip
+  - vim

@@ -1,0 +1,137 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: yes
+
+- name: Install Java 17
+  apt:
+    name: openjdk-17-jdk
+    state: present
+  become: yes
+
+- name: Verify Java installation
+  command: java -version
+  register: java_version
+  changed_when: false
+
+- name: Create Tomcat group
+  group:
+    name: tomcat
+    state: present
+  become: yes
+
+- name: Create Tomcat user
+  user:
+    name: tomcat
+    group: tomcat
+    home: /opt/tomcat
+    shell: /bin/false
+    system: yes
+  become: yes
+
+- name: Create Tomcat directory
+  file:
+    path: /opt/tomcat
+    state: directory
+    owner: tomcat
+    group: tomcat
+    mode: '0755'
+  become: yes
+
+- name: Download Tomcat directly on remote server
+  shell: |
+    wget -q --timeout=60 \
+    "https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.18/bin/apache-tomcat-10.1.18.tar.gz" \
+    -O /tmp/tomcat.tar.gz || \
+    wget -q --timeout=60 \
+    "https://archive.apache.org/dist/tomcat/tomcat-10/v10.1.18/bin/apache-tomcat-10.1.18.tar.gz" \
+    -O /tmp/tomcat.tar.gz
+  become: yes
+  args:
+    creates: /tmp/tomcat.tar.gz
+
+- name: Extract Tomcat
+  unarchive:
+    src: /tmp/tomcat.tar.gz
+    dest: /opt/tomcat
+    remote_src: yes
+    extra_opts: ['--strip-components=1']
+    owner: tomcat
+    group: tomcat
+  become: yes
+
+- name: Create Tomcat systemd service
+  copy:
+    dest: /etc/systemd/system/tomcat.service
+    content: |
+      [Unit]
+      Description=Apache Tomcat Web Application Container
+      After=network.target
+
+      [Service]
+      Type=forking
+      User=tomcat
+      Group=tomcat
+      Environment="JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64"
+      Environment="CATALINA_HOME=/opt/tomcat"
+      Environment="CATALINA_BASE=/opt/tomcat"
+      Environment="CATALINA_PID=/opt/tomcat/temp/tomcat.pid"
+      Environment="CATALINA_OPTS=-Xms256m -Xmx512m"
+      ExecStart=/opt/tomcat/bin/startup.sh
+      ExecStop=/opt/tomcat/bin/shutdown.sh
+      Restart=on-failure
+
+      [Install]
+      WantedBy=multi-user.target
+  become: yes
+  notify: restart tomcat
+
+- name: Reload systemd
+  systemd:
+    daemon_reload: yes
+  become: yes
+
+- name: Start and enable Tomcat
+  service:
+    name: tomcat
+    state: started
+    enabled: yes
+  become: yes
+
+- name: Wait for Tomcat to create webapps directory
+  wait_for:
+    path: /opt/tomcat/webapps
+    state: present
+    timeout: 30
+  become: yes
+
+- name: Create stratum app directory
+  file:
+    path: /opt/tomcat/webapps/stratum
+    state: directory
+    owner: tomcat
+    group: tomcat
+    mode: '0755'
+  become: yes
+
+- name: Create simple health check app
+  copy:
+    dest: /opt/tomcat/webapps/stratum/index.html
+    content: |
+      <!DOCTYPE html>
+      <html>
+      <head><title>Project Stratum</title></head>
+      <body>
+        <h1>Project Stratum</h1>
+        <p>Status: operational</p>
+        <p>Tier: application</p>
+        <p>Provisioned by: Terraform + Ansible</p>
+      </body>
+      </html>
+    owner: tomcat
+    group: tomcat
+    mode: '0644'
+  become: yes
+  notify: restart tomcat

@@ -1,0 +1,4 @@
+---
+tomcat_version: "10.1.18"
+java_home: /usr/lib/jvm/java-17-openjdk-amd64
+app_name: stratum-app

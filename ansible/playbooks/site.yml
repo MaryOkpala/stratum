@@ -1,0 +1,19 @@
+---
+- name: Configure all servers — common baseline
+  hosts: all
+  gather_facts: yes
+  roles:
+    - common
+    - security
+
+- name: Configure web tier
+  hosts: web
+  gather_facts: yes
+  roles:
+    - nginx
+
+- name: Configure app tier
+  hosts: app
+  gather_facts: yes
+  roles:
+    - java-app

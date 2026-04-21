@@ -1,0 +1,8 @@
+---
+- name: Configure web tier only
+  hosts: web
+  gather_facts: yes
+  roles:
+    - common
+    - security
+    - nginx
