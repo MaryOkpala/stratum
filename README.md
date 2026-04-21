@@ -33,45 +33,6 @@ Zero manual console clicks and everything is versioned, repeatable, and idempote
 
 ![Infrastructure Layout](docs/infrastructure-layout.png)
 
-```
-Internet
-    │
-    ▼
-Internet Gateway (stratum-dev-igw)
-    │
-    ▼
-┌─────────────────────────────────────────┐
-│ Public Subnet · 10.0.1.0/24             │
-│                                         │
-│  ┌─────────────────┐  ┌──────────────┐  │
-│  │  Bastion host   │  │  Web tier    │  │
-│  │  t3.micro       │  │  t3.small    │  │
-│  │  3.237.60.8     │  │  Nginx :80   │  │
-│  │  SSH jump only  │  │  public IP   │  │
-│  └─────────────────┘  └──────┬───────┘  │
-│                              │          │
-│              ┌───────────────┘          │
-│              │ proxy_pass :8080         │
-└──────────────┼──────────────────────────┘
-               ▼
-┌─────────────────────────────────────────┐
-│ Private Subnet · 10.0.2.0/24            │
-│                                         │
-│  ┌─────────────────────────────────┐    │
-│  │  App tier                       │    │
-│  │  t3.small · 10.0.2.141          │    │
-│  │  Java 17 · Tomcat :8080         │    │
-│  │  NO public IP                   │    │
-│  └─────────────────────────────────┘    │
-│              │                          │
-│              ▼ outbound only            │
-│         NAT Gateway                     │
-└─────────────────────────────────────────┘
-    │
-    ▼
-Internet (outbound only)
-```
-
 ## Quick start
 
 ```bash
