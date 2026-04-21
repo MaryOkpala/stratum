@@ -1,0 +1,11 @@
+[bastion]
+bastion ansible_host=YOUR_BASTION_PUBLIC_IP ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/stratum-key.pem
+
+[web]
+web ansible_host=YOUR_WEB_PUBLIC_IP ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/stratum-key.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[app]
+app ansible_host=YOUR_APP_PRIVATE_IP ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/stratum-key.pem ansible_ssh_common_args='-o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -i ~/.ssh/stratum-key.pem -o StrictHostKeyChecking=no ubuntu@YOUR_BASTION_PUBLIC_IP"'
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
